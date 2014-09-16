@@ -1,0 +1,3 @@
+# Module mm
+# RPC service class, partial path of RPC policy file
+me.nolanfoster.mm.client.GreetingService, DBC87E14A4DE4764486621B41EEC5E4E.gwt.rpc
