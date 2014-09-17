@@ -72,30 +72,10 @@
 <div id="agenda">
 </div>
     <script>
-function displayContent(root) {
-var feed = root.feed;
-console.log(feed);
-var entries = feed.entry || [];
-var html = ['<ul>'];
 
-for (var i = 0; i < entries.length; ++i) {
-var entry = entries[i];
-var title = (entry.title.type == 'html') ? entry.title.$t : escape(entry.title.$t);
-var date = (entry.gsx$date.type == 'html') ? entry.gsx$date.$t : escape(entry.gsx$date.$t);
-var time = (entry.gsx$time.type == 'html') ? entry.gsx$time.$t : escape(entry.gsx$time.$t);
-var flyer = entry.gsx$flyer.type;
-
-html.push('<ul class="list-group"> <li class="list-group-item">','name: ', title,'</li> <li class="list-group-item"> ','Date: ',date, '</ul>');
-}
-
-html.push('</ul>');
-document.getElementById("agenda").innerHTML = html.join("");
-}
 </script>
 
-<script src="https://spreadsheets.google.com/feeds/list/1HjFwchHiwZkUiIssOWbCysgiXBncHcY1H5Y9sRdO6Lo/od6/public/values?alt=json-in-script&callback=displayContent">
-</script>
-    
+
     
   </body>
 </html>
