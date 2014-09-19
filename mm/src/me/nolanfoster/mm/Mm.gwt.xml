@@ -21,7 +21,7 @@
   <!-- Other module inherits                                      -->
 
   <!-- Specify the app entry point class.                         -->
-  <entry-point class='me.nolanfoster.mm.client.Mm'/>
+  <entry-point class='me.nolanfoster.mm.client.Tasks'/>
 
   <!-- Specify the paths for translatable code                    -->
   <source path='client'/>

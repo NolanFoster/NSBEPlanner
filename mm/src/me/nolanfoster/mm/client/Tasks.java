@@ -1,6 +1,7 @@
 package me.nolanfoster.mm.client;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import me.nolanfoster.mm.shared.FieldVerifier;
 
@@ -24,12 +25,14 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.i18n.client.NumberFormat;
+import com.google.gwt.user.client.Random;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
-public class Mm implements EntryPoint {
+public class Tasks implements EntryPoint {
 	/**
 	 * The message displayed to the user when the server cannot be reached or
 	 * returns an error.
@@ -46,34 +49,35 @@ public class Mm implements EntryPoint {
 
 	  private static final int REFRESH_INTERVAL = 5000; // ms
 	  private VerticalPanel mainPanel = new VerticalPanel();
-	  private FlexTable stocksFlexTable = new FlexTable();
+	  private FlexTable tasksFlexTable = new FlexTable();
 	  private HorizontalPanel addPanel = new HorizontalPanel();
 	  private TextBox newSymbolTextBox = new TextBox();
-	  private Button addStockButton = new Button("Add");
+	  private Button addTaskButton = new Button("Add");
 	  private Label lastUpdatedLabel = new Label();
-	  private ArrayList<String> stocks = new ArrayList<String>();  
+	  private ArrayList<String> tasks = new ArrayList<String>();  
 	/**
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad() {
-		  // Create table for stock data.
-	    stocksFlexTable.setText(0, 0, "Symbol");
-	    stocksFlexTable.setText(0, 1, "Price");
-	    stocksFlexTable.setText(0, 2, "Change");
-	    stocksFlexTable.setText(0, 3, "Remove");
+		  // Create table for task data.
+	    tasksFlexTable.setText(0, 0, "Task");
+	    tasksFlexTable.setText(0, 1, "Date Assigned");
+	    tasksFlexTable.setText(0, 2, "Description");
+	    tasksFlexTable.setText(0, 3, "Remove");
+		
 		
 
-	    // Assemble Add Stock panel.
+	    // Assemble Add task panel.
 	    addPanel.add(newSymbolTextBox);
-	    addPanel.add(addStockButton);
+	    addPanel.add(addTaskButton);
 
 	    // Assemble Main panel.
-	    mainPanel.add(stocksFlexTable);
+	    mainPanel.add(tasksFlexTable);
 	    mainPanel.add(addPanel);
 	    mainPanel.add(lastUpdatedLabel);
 
 	    // Associate the Main panel with the HTML host page.
-	    RootPanel.get("stockList").add(mainPanel);
+	    RootPanel.get("taskList").add(mainPanel);
 
 	    // Move cursor focus to the input box.
 	    newSymbolTextBox.setFocus(true);
@@ -88,9 +92,9 @@ public class Mm implements EntryPoint {
 	    refreshTimer.scheduleRepeating(REFRESH_INTERVAL);
 		
 	    // Listen for mouse events on the Add button.
-	    addStockButton.addClickHandler(new ClickHandler() {
+	    addTaskButton.addClickHandler(new ClickHandler() {
 	      public void onClick(ClickEvent event) {
-	        addStock();
+	        addTask();
 	      }
 	    });
 	    
@@ -98,7 +102,7 @@ public class Mm implements EntryPoint {
 	    newSymbolTextBox.addKeyDownHandler(new KeyDownHandler() {
 	      public void onKeyDown(KeyDownEvent event) {
 	        if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
-	          addStock();
+	          addTask();
 	        }
 	      }
 	    });
@@ -106,47 +110,93 @@ public class Mm implements EntryPoint {
 	  }
 
 	  /**
-	   * Add stock to FlexTable. Executed when the user clicks the addStockButton or
+	   * Add task to FlexTable. Executed when the user clicks the addTaskButton or
 	   * presses enter in the newSymbolTextBox.
 	   */
-	  private void addStock() {
-		    final String symbol = newSymbolTextBox.getText().toUpperCase().trim();
+	  private void addTask() {
+		    final String task = newSymbolTextBox.getText().toUpperCase().trim();
 		    newSymbolTextBox.setFocus(true);
 
-		    // Stock code must be between 1 and 10 chars that are numbers, letters, or dots.
-		    if (!symbol.matches("^[0-9A-Z\\.]{1,10}$")) {
-		      Window.alert("'" + symbol + "' is not a valid symbol.");
+		    // Task code must be between 1 and 10 chars that are numbers, letters, or dots.
+		    if (!task.matches("^[0-9A-Z\\.]{1,10}$")) {
+		      Window.alert("'" + task + "' is not a valid Task.");
 		      newSymbolTextBox.selectAll();
 		      return;
 		    }
 
 		    newSymbolTextBox.setText("");
 
-		    // Don't add the stock if it's already in the table.
-		    if (stocks.contains(symbol))
+		    // Don't add the task if it's already in the table.
+		    if (tasks.contains(task))
 		      return;
 
-		    // Add the stock to the table.
-		    int row = stocksFlexTable.getRowCount();
-		    stocks.add(symbol);
-		    stocksFlexTable.setText(row, 0, symbol);
+		    // Add the Task to the table.
+		    int row = tasksFlexTable.getRowCount();
+		    tasks.add(task);
+		    tasksFlexTable.setText(row, 0, task);
 
-		    // Add a button to remove this stock from the table.
-		    Button removeStockButton = new Button("x");
-		    removeStockButton.addClickHandler(new ClickHandler() {
+		    // Add a button to remove this stask from the table.
+		    Button removeTaskButton = new Button("x");
+		    removeTaskButton.addClickHandler(new ClickHandler() {
 		      public void onClick(ClickEvent event) {
-		        int removedIndex = stocks.indexOf(symbol);
-		        stocks.remove(removedIndex);        stocksFlexTable.removeRow(removedIndex + 1);
+		        int removedIndex = tasks.indexOf(task);
+		        tasks.remove(removedIndex);        tasksFlexTable.removeRow(removedIndex + 1);
 		      }
 		    });
-		    stocksFlexTable.setWidget(row, 3, removeStockButton);
+		    tasksFlexTable.setWidget(row, 3, removeTaskButton);
 
-		    // Get the stock price.
+		    // Get the task price.
 		    refreshWatchList();
 	  }
 	  
-	  private void refreshWatchList() {
-		    // TODO Auto-generated method stub
+	 
+		  private void refreshWatchList() {
+			  
+			    
+			    TaskDate[] prices = new TaskDate[tasks.size()];
+			    for (int i = 0; i < tasks.size(); i++) {
+			    	Date d = new Date(Math.abs(System.currentTimeMillis() - Random.nextInt()));
+			      String price = d.toString();
+			      String change = "Do something";
+			         
 
-		  }
+			      prices[i] = new TaskDate(tasks.get(i), price, change);
+			    }
+
+			    updateTable(prices);
+			  }
+
+		private void updateTable(TaskDate[] prices) {
+			 for (int i = 0; i < prices.length; i++) {
+			      updateTable(prices[i]);
+			
+		}
+
+		  
+}
+
+		
+/**
+ * Update a single row in the stock table.
+ *
+ * @param price Stock data for a single row.
+ */
+private void updateTable(TaskDate price) {
+  // Make sure the stock is still in the stock table.
+  if (!tasks.contains(price.getSymbol())) {
+    return;
+  }
+
+  int row = tasks.indexOf(price.getSymbol()) + 1;
+
+  // Format the data in the Price and Change fields.
+  String priceText = price.getPrice();
+  
+  String changeText = price.getChange();
+
+
+  // Populate the Price and Change fields with new data.
+  tasksFlexTable.setText(row, 1, priceText);
+  tasksFlexTable.setText(row, 2, changeText);
+}
 }
