@@ -64,8 +64,8 @@ public class Tasks implements EntryPoint {
 	    tasksFlexTable.setText(0, 1, "Date Assigned");
 	    tasksFlexTable.setText(0, 2, "Description");
 	    tasksFlexTable.setText(0, 3, "Remove");
-		
-		
+		//styling for table
+	    tasksFlexTable.setCellPadding(6);
 
 	    // Assemble Add task panel.
 	    addPanel.add(newSymbolTextBox);
